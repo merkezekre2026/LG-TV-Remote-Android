@@ -61,17 +61,20 @@ object NecEncoder {
         pattern[0] = LEADER_MARK
         pattern[1] = LEADER_SPACE
 
-        // Encode bits LSB-first
-        for (i in 0 until BITS) {
-            val bit = ((value shr i) and 1L) != 0L
-            val idx = 2 + i * 2
-
-            if (bit) {
-                pattern[idx] = BIT_MARK
-                pattern[idx + 1] = ONE_SPACE
-            } else {
-                pattern[idx] = BIT_MARK
-                pattern[idx + 1] = ZERO_SPACE
+        // NEC protocol: send bytes MSB first (address, ~address, command, ~command),
+        // but within each byte, bits are sent LSB first.
+        var idx = 2
+        for (bytePos in 3 downTo 0) {      // Bytes: MSB → LSB
+            for (bitPos in 0..7) {           // Bits within byte: LSB → MSB
+                val bit = ((value shr (bytePos * 8 + bitPos)) and 1L) != 0L
+                if (bit) {
+                    pattern[idx] = BIT_MARK
+                    pattern[idx + 1] = ONE_SPACE
+                } else {
+                    pattern[idx] = BIT_MARK
+                    pattern[idx + 1] = ZERO_SPACE
+                }
+                idx += 2
             }
         }
 
