@@ -6,6 +6,9 @@
         android:name="android.hardware.consumerir"
         android:required="false" />
 
+    <!-- IR transmit permission (Android 13+) -->
+    <uses-permission android:name="android.permission.TRANSMIT_IR" />
+
     <!-- Wake lock to keep screen on while using remote -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
