@@ -1,7 +1,5 @@
 package com.lgremote.app.ui.screens
 
-import androidx.compose.animation.core.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,10 +31,7 @@ fun RemoteButton(
     minHeight: Int = 52,
     highlighted: Boolean = false
 ) {
-    val bgColor by animateColorAsState(
-        targetValue = if (highlighted) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else color,
-        animationSpec = tween(300)
-    )
+    val bgColor = if (highlighted) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else color
 
     Button(
         onClick = onClick,
@@ -73,10 +68,7 @@ fun CircleRemoteButton(
     fontSize: Int = 18,
     highlighted: Boolean = false
 ) {
-    val bgColor by animateColorAsState(
-        targetValue = if (highlighted) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else color,
-        animationSpec = tween(300)
-    )
+    val bgColor = if (highlighted) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else color
 
     Button(
         onClick = onClick,
