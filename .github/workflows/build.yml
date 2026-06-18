@@ -5,7 +5,7 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
 
 jobs:
   build:
@@ -21,49 +21,43 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up Gradle
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      - name: Generate launcher icons (placeholder PNGs)
+      - name: Generate Gradle Wrapper
         run: |
-          # Android requires actual PNG mipmaps for pre-API 26 devices.
-          # Create minimal 48x48 red PNGs as placeholders.
-          mkdir -p app/src/main/res/mipmap-hdpi
-          mkdir -p app/src/main/res/mipmap-mdpi
-          mkdir -p app/src/main/res/mipmap-xhdpi
-          mkdir -p app/src/main/res/mipmap-xxhdpi
-          mkdir -p app/src/main/res/mipmap-xxxhdpi
-          # Use ImageMagick or Python to create simple icons
+          # Generate the wrapper jar from the installed gradle
+          gradle wrapper --gradle-version 8.9
+
+      - name: Generate launcher icons
+        run: |
           python3 -c "
-          import struct, zlib
+          import struct, zlib, os
           def create_png(width, height, r, g, b):
               def chunk(ctype, data):
                   c = ctype + data
                   return struct.pack('>I', len(data)) + c + struct.pack('>I', zlib.crc32(c) & 0xffffffff)
               raw = b''
               for y in range(height):
-                  raw += b'\x00'  # filter none
+                  raw += b'\x00'
                   for x in range(width):
                       raw += bytes([r, g, b, 255])
               ihdr = struct.pack('>IIBBBBB', width, height, 8, 6, 0, 0, 0)
               return b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', ihdr) + chunk(b'IDAT', zlib.compress(raw)) + chunk(b'IEND', b'')
           sizes = {'mipmap-mdpi': 48, 'mipmap-hdpi': 72, 'mipmap-xhdpi': 96, 'mipmap-xxhdpi': 144, 'mipmap-xxxhdpi': 192}
           for folder, size in sizes.items():
+              os.makedirs(f'app/src/main/res/{folder}', exist_ok=True)
               png = create_png(size, size, 230, 0, 18)
-              with open(f'app/src/main/res/{folder}/ic_launcher.png', 'wb') as f:
-                  f.write(png)
-              with open(f'app/src/main/res/{folder}/ic_launcher_round.png', 'wb') as f:
-                  f.write(png)
+              for fname in ['ic_launcher.png', 'ic_launcher_round.png']:
+                  with open(f'app/src/main/res/{folder}/{fname}', 'wb') as f:
+                      f.write(png)
           print('Launcher icons generated')
           "
-          # Rebuild with icons
-          ./gradlew assembleDebug
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
