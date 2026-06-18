@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Background circle -->
+    <path
+        android:fillColor="#E60012"
+        android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0" />
+    <!-- LG smile text -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M35,45 L35,55 M45,45 L55,55 L65,45 M73,45 L73,55"
+        android:strokeWidth="3"
+        android:strokeColor="#FFFFFF" />
+    <!-- IR wave -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M30,70 Q40,62 50,70"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M26,74 Q40,63 54,74"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF" />
+</vector>

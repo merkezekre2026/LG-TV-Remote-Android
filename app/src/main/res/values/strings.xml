@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LG Remote</string>
+    <string name="tab_main">Kumanda</string>
+    <string name="tab_numpad">NumPad</string>
+    <string name="tab_media">Medya</string>
+    <string name="tab_smart">Smart</string>
+    <string name="ir_not_supported">Cihazınız IR vericiyi desteklemiyor</string>
+    <string name="ir_supported">IR verici hazır</string>
+    <string name="btn_power">Power</string>
+    <string name="btn_vol_up">Ses +</string>
+    <string name="btn_vol_down">Ses -</string>
+    <string name="btn_mute">Mute</string>
+    <string name="btn_ch_up">Kanal +</string>
+    <string name="btn_ch_down">Kanal -</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_back">Geri</string>
+    <string name="btn_home">Home</string>
+    <string name="btn_exit">Exit</string>
+    <string name="btn_menu">Menü</string>
+    <string name="btn_input">Input</string>
+    <string name="btn_search">Ara</string>
+    <string name="btn_info">Info</string>
+    <string name="btn_guide">Rehber</string>
+    <string name="btn_play">▶</string>
+    <string name="btn_pause">⏸</string>
+    <string name="btn_stop">⏹</string>
+    <string name="btn_rew">⏪</string>
+    <string name="btn_ff">⏩</string>
+    <string name="btn_prev">⏮</string>
+    <string name="btn_next">⏭</string>
+    <string name="btn_record">⏺</string>
+    <string name="btn_red">R</string>
+    <string name="btn_green">G</string>
+    <string name="btn_yellow">Y</string>
+    <string name="btn_blue">B</string>
+    <string name="btn_settings">Ayar</string>
+    <string name="btn_favorite">Favori</string>
+    <string name="btn_recent">Son</string>
+    <string name="btn_livezoom">Zoom</string>
+    <string name="btn_sleep">Uyku</string>
+    <string name="btn_netflix">Netflix</string>
+    <string name="btn_amazon">Amazon</string>
+    <string name="btn_disney">Disney+</string>
+    <string name="btn_apps">Apps</string>
+    <string name="btn_livetv">Canlı TV</string>
+</resources>

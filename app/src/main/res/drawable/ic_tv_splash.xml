@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    <!-- TV Screen -->
+    <path
+        android:fillColor="#2D2D2D"
+        android:pathData="M40,30 L160,30 Q165,30 165,35 L165,120 Q165,125 160,125 L40,125 Q35,125 35,120 L35,35 Q35,30 40,30z" />
+    <path
+        android:fillColor="#E60012"
+        android:pathData="M50,50 L100,90 L150,50"
+        android:strokeWidth="3"
+        android:strokeColor="#E60012" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M75,72 L85,82 L95,72"
+        android:strokeWidth="4"
+        android:strokeColor="#FFFFFF" />
+    <!-- TV Stand -->
+    <path
+        android:fillColor="#2D2D2D"
+        android:pathData="M80,125 L120,125 L130,145 L70,145z" />
+    <!-- IR waves -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M30,80 Q22,70 30,60"
+        android:strokeWidth="3"
+        android:strokeColor="#E60012" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M26,86 Q16,70 26,54"
+        android:strokeWidth="2.5"
+        android:strokeColor="#E60012" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M22,92 Q10,70 22,48"
+        android:strokeWidth="2"
+        android:strokeColor="#E60012" />
+</vector>
