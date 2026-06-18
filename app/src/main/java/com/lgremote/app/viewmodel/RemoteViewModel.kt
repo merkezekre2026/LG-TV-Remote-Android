@@ -42,7 +42,16 @@ class RemoteViewModel(application: Application) : AndroidViewModel(application) 
     val uiState: StateFlow<RemoteUiState> = _uiState.asStateFlow()
 
     init {
-        checkIrSupport()
+        try {
+            checkIrSupport()
+        } catch (e: Exception) {
+            _uiState.update {
+                it.copy(
+                    isIrSupported = false,
+                    irStatusMessage = "Başlatma hatası: ${e.message}"
+                )
+            }
+        }
     }
 
     /**
@@ -53,9 +62,8 @@ class RemoteViewModel(application: Application) : AndroidViewModel(application) 
 
         _uiState.update { it.copy(isTransmitting = true, lastError = null) }
 
-        viewModelScope.launch {
-            try {
-                val result = irService.transmit(code)
+        try {
+            val result = irService.transmit(code)
                 when (result) {
                     is IrResult.Success -> {
                         _uiState.update {
@@ -84,7 +92,6 @@ class RemoteViewModel(application: Application) : AndroidViewModel(application) 
                     )
                 }
             }
-        }
     }
 
     /**
