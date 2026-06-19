@@ -59,10 +59,10 @@ class IrService(context: Context) {
             return IrResult.Error(IrError.FREQUENCY_NOT_SUPPORTED)
         }
 
-        // 2. Encode the NEC signal
+        // 2. Encode the NEC signal (cycles format for better device compatibility)
         val pattern: IntArray
         try {
-            pattern = NecEncoder.encode(code.hexCode)
+            pattern = NecEncoder.encodeCycles(code.hexCode)
         } catch (e: IllegalArgumentException) {
             return IrResult.Error(IrError.INVALID_CODE, e.message)
         }

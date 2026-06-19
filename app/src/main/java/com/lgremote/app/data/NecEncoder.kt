@@ -1,7 +1,5 @@
 package com.lgremote.app.data
 
-import kotlin.math.ceil
-
 /**
  * Encodes LG TV IR hex codes into NEC protocol pulse patterns
  * suitable for Android's [android.hardware.ConsumerIrManager].
@@ -20,73 +18,99 @@ import kotlin.math.ceil
  *   │  └────── Address complement (0xDF = ~0x20)
  *   └───────── Address (always 0x20 for LG TVs)
  * ```
- * Transmission order: LSB first for each byte, bytes in order address → ~address → command → ~command.
+ *
+ * ## IMPORTANT: ConsumerIrManager Pattern Units
+ * Standard Android expects MICROSECONDS, but many manufacturers (Xiaomi, Huawei, etc.)
+ * implemented it with CARRIER CYCLES instead. This encoder supports both.
+ * Convert: cycles = (us * freq) / 1_000_000
  */
 object NecEncoder {
 
     // NEC timing constants (microseconds)
-    private const val LEADER_MARK = 9000
-    private const val LEADER_SPACE = 4500
-    private const val BIT_MARK = 560
-    private const val ZERO_SPACE = 560
-    private const val ONE_SPACE = 1690
-    private const val STOP_MARK = 560
+    private const val LEADER_MARK_US = 9000
+    private const val LEADER_SPACE_US = 4500
+    private const val BIT_MARK_US = 560
+    private const val ZERO_SPACE_US = 560
+    private const val ONE_SPACE_US = 1690
+    private const val STOP_MARK_US = 560
 
     // Bit length of the NEC payload (4 bytes)
     private const val BITS = 32
 
-    /**
-     * Precompute the carrier frequency to use with transmit().
-     * LG TVs use a 38 kHz carrier.
-     */
+    /** LG TVs use a 38 kHz carrier. */
     const val CARRIER_FREQUENCY_HZ = 38000
 
+    /** Alternative frequency - some LG models use 37.9 kHz. */
+    private const val CARRIER_FREQ_ALT = 37900
+
     /**
-     * Convert an LG hex IR code string (e.g. "20DF10EF") into a pulse pattern
-     * that can be passed directly to [android.hardware.ConsumerIrManager.transmit].
-     *
-     * @param hexCode 8-character hex string representing the NEC code
-     * @return IntArray of alternating mark (on) / space (off) durations in microseconds.
-     *         Length is always 2 (leader) + 2*32 (data bits) + 1 (stop) = 67.
+     * Convert microseconds to carrier cycles for this frequency.
+     */
+    private fun usToCycles(us: Int, freq: Int = CARRIER_FREQUENCY_HZ): Int {
+        return ((us.toLong() * freq) / 1_000_000L).toInt().coerceAtLeast(1)
+    }
+
+    /**
+     * Encode NEC pattern in **microseconds** (standard Android format).
      */
     @JvmStatic
     fun encode(hexCode: String): IntArray {
+        return buildPattern(hexCode, LEADER_MARK_US, LEADER_SPACE_US,
+            BIT_MARK_US, ZERO_SPACE_US, ONE_SPACE_US, STOP_MARK_US)
+    }
+
+    /**
+     * Encode NEC pattern in **carrier cycles** (Xiaomi/Huawei format).
+     * Many phones require this format instead of microseconds.
+     */
+    @JvmStatic
+    fun encodeCycles(hexCode: String): IntArray {
+        val freq = CARRIER_FREQUENCY_HZ
+        return buildPattern(hexCode,
+            usToCycles(LEADER_MARK_US, freq),
+            usToCycles(LEADER_SPACE_US, freq),
+            usToCycles(BIT_MARK_US, freq),
+            usToCycles(ZERO_SPACE_US, freq),
+            usToCycles(ONE_SPACE_US, freq),
+            usToCycles(STOP_MARK_US, freq))
+    }
+
+    /**
+     * Build the pulse pattern with given timing values.
+     */
+    private fun buildPattern(
+        hexCode: String,
+        leaderMark: Int, leaderSpace: Int,
+        bitMark: Int, zeroSpace: Int, oneSpace: Int,
+        stopMark: Int
+    ): IntArray {
         require(hexCode.length == 8) { "Hex code must be exactly 8 characters, got: $hexCode" }
         val value = hexCode.toLong(16)
 
-        // 2 for leader + 2 per bit + 1 for stop
         val pattern = IntArray(2 + 2 * BITS + 1)
 
         // Leader
-        pattern[0] = LEADER_MARK
-        pattern[1] = LEADER_SPACE
+        pattern[0] = leaderMark
+        pattern[1] = leaderSpace
 
-        // NEC protocol: send bytes MSB first (address, ~address, command, ~command),
-        // but within each byte, bits are sent LSB first.
+        // NEC protocol: bytes MSB first (address → ~address → command → ~command),
+        // within each byte, bits sent LSB first.
         var idx = 2
-        for (bytePos in 3 downTo 0) {      // Bytes: MSB → LSB
-            for (bitPos in 0..7) {           // Bits within byte: LSB → MSB
+        for (bytePos in 3 downTo 0) {
+            for (bitPos in 0..7) {
                 val bit = ((value shr (bytePos * 8 + bitPos)) and 1L) != 0L
-                if (bit) {
-                    pattern[idx] = BIT_MARK
-                    pattern[idx + 1] = ONE_SPACE
-                } else {
-                    pattern[idx] = BIT_MARK
-                    pattern[idx + 1] = ZERO_SPACE
-                }
+                pattern[idx] = bitMark
+                pattern[idx + 1] = if (bit) oneSpace else zeroSpace
                 idx += 2
             }
         }
 
         // Stop bit
-        pattern[pattern.lastIndex] = STOP_MARK
+        pattern[pattern.lastIndex] = stopMark
 
         return pattern
     }
 
-    /**
-     * Convenience method: return the LG TV carrier frequency for use with transmit().
-     */
     @JvmStatic
     fun carrierFrequency(): Int = CARRIER_FREQUENCY_HZ
 }
